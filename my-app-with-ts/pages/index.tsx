@@ -6,6 +6,8 @@ import styles from "../styles/Home.module.css";
 import useTranslation from "next-translate/useTranslation";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../components/StoreProvider";
+import axios from "axios";
+import { ICategory } from "../models";
 
 const Home: NextPage = () => {
   const { t, lang } = useTranslation();
@@ -35,6 +37,14 @@ const Home: NextPage = () => {
         </h1>
         <div>{t("home:title")}</div>
         <div>{store.timeString}</div>
+
+        <div>
+          {store.categoryList.map((category: ICategory) => {
+            return <div key={category.id}>{category.name}</div>;
+          })}
+        </div>
+
+        <button onClick={() => store.getCategoryList()}>egt</button>
 
         <p className={styles.description}>
           Get started by editing{" "}
@@ -89,3 +99,17 @@ const Home: NextPage = () => {
 };
 
 export default observer(Home);
+
+export async function getServerSideProps() {
+  const api = "http://192.168.1.13:6001/v1/grandet_public/nft_get_categories";
+  const { data } = await axios.post(api);
+
+  return {
+    props: {
+      initialState: {
+        lastUpdate: Date.now(),
+        categoryList: data.data,
+      },
+    },
+  };
+}
