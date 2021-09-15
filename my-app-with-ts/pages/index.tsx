@@ -15,11 +15,11 @@ const Home: NextPage = () => {
   const store = useStore();
 
   useEffect(() => {
-    store.start();
+    store.session.start();
 
     // stop the clock when the component unmounts
     return () => {
-      store.stop();
+      store.session.stop();
     };
   }, [store]);
 
@@ -36,15 +36,15 @@ const Home: NextPage = () => {
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
         <div>{t("home:title")}</div>
-        <div>{store.timeString}</div>
+        <div>{store.session.timeString}</div>
 
         <div>
-          {store.categoryList.map((category: ICategory) => {
+          {store.product.categoryList.map((category: ICategory) => {
             return <div key={category.id}>{category.name}</div>;
           })}
         </div>
 
-        <button onClick={() => store.getCategoryList()}>egt</button>
+        <button onClick={() => store.product.getCategoryList()}>get</button>
 
         <p className={styles.description}>
           Get started by editing{" "}

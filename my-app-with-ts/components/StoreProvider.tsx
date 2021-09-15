@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
-import { Store } from "../store";
+import createStore from "../stores";
 
-let store: any;
+let rootStore = createStore();
 
-export const StoreContext = createContext(store);
+export const StoreContext = createContext(rootStore);
 
 export function useStore() {
   const context = useContext(StoreContext);
@@ -23,17 +23,18 @@ export function StoreProvider({ children, initialState: initialData }: any) {
 }
 
 function initializeStore(initialData = null) {
-  const _store = store ?? new Store();
+  const _store = rootStore ?? createStore();
 
   // If your page has Next.js data fetching methods that use a Mobx store, it will
   // get hydrated here, check `pages/ssg.js` and `pages/ssr.js` for more details
   if (initialData) {
-    _store.hydrate(initialData);
+    _store.session.hydrate(initialData);
+    _store.product.hydrate(initialData);
   }
   // For SSG and SSR always create a new store
   if (typeof window === "undefined") return _store;
   // Create the store once in the client
-  if (!store) store = _store;
+  if (!rootStore) rootStore = _store;
 
   return _store;
 }
